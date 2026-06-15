@@ -7,10 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Great+Vibes&family=Lora:ital,wght@0,400;0,500;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
-
   <style>
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-
     :root {
       --bg:      #07030D;
       --surface: #130B1C;
@@ -21,352 +19,142 @@
       --muted:   #7A6470;
       --border:  rgba(196,144,154,0.18);
     }
+    html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--ivory); font-family:'Jost',sans-serif; -webkit-font-smoothing:antialiased; }
 
-    html, body {
-      width:100%; height:100%;
-      overflow:hidden;
-      background:var(--bg);
-      color:var(--ivory);
-      font-family:'Jost', sans-serif;
-      -webkit-font-smoothing:antialiased;
-    }
+    /* CANVAS */
+    #canvas { position:fixed; inset:0; pointer-events:none; z-index:0; }
 
-    /* ─── CANVAS ─── */
-    #canvas {
-      position:fixed; inset:0;
-      pointer-events:none;
-      z-index:0;
-    }
-
-    /* ─── SECTIONS ─── */
-    .section {
-      position:fixed; inset:0;
-      display:flex; flex-direction:column;
-      align-items:center; justify-content:center;
-      padding:2rem 1.5rem;
-      z-index:1;
-      opacity:0;
-      pointer-events:none;
-      transition: opacity .75s cubic-bezier(.4,0,.2,1);
-    }
+    /* SECTIONS */
+    .section { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2rem 1.5rem; z-index:1; opacity:0; pointer-events:none; transition:opacity .75s cubic-bezier(.4,0,.2,1); }
     .section.active { opacity:1; pointer-events:all; }
 
-    /* ─── NAV DOTS ─── */
-    .dots {
-      position:fixed; right:1.4rem; top:50%;
-      transform:translateY(-50%);
-      display:flex; flex-direction:column; gap:.55rem;
-      z-index:100;
-    }
-    .dot {
-      width:6px; height:6px; border-radius:50%;
-      background:rgba(196,144,154,.25);
-      cursor:pointer;
-      transition: all .3s ease;
-    }
-    .dot.active {
-      background:var(--rose);
-      transform:scale(1.5);
-    }
+    /* NAV DOTS */
+    .dots { position:fixed; right:1.4rem; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:.55rem; z-index:100; }
+    .dot { width:6px; height:6px; border-radius:50%; background:rgba(196,144,154,.25); cursor:pointer; transition:all .3s ease; }
+    .dot.active { background:var(--rose); transform:scale(1.5); }
+    .dot.locked { opacity:.2; pointer-events:none; cursor:default; }
 
-    /* ─── SHARED TYPOGRAPHY ─── */
-    .eyebrow {
-      font-family:'Jost',sans-serif;
-      font-weight:200; font-size:.65rem;
-      letter-spacing:.35em; text-transform:uppercase;
-      color:var(--rose); margin-bottom:1.1rem;
-    }
-    .display {
-      font-family:'Playfair Display',serif;
-      font-style:italic; font-weight:400;
-      font-size:clamp(2.2rem,7vw,3.8rem);
-      color:var(--ivory); line-height:1.12;
-      text-align:center;
-    }
-    .script {
-      font-family:'Great Vibes',cursive;
-      font-size:clamp(1.8rem,5.5vw,3rem);
-      color:var(--rose);
-    }
-    .body-text {
-      font-family:'Lora',serif;
-      font-size:.86rem; line-height:1.9;
-      color:rgba(245,238,232,.82);
-    }
+    /* TYPOGRAPHY */
+    .eyebrow { font-family:'Jost',sans-serif; font-weight:200; font-size:.65rem; letter-spacing:.35em; text-transform:uppercase; color:var(--rose); margin-bottom:1.1rem; }
+    .display { font-family:'Playfair Display',serif; font-style:italic; font-weight:400; font-size:clamp(2.2rem,7vw,3.8rem); color:var(--ivory); line-height:1.12; text-align:center; }
+    .script { font-family:'Great Vibes',cursive; font-size:clamp(1.8rem,5.5vw,3rem); color:var(--rose); }
+    .body-text { font-family:'Lora',serif; font-size:.86rem; line-height:1.9; color:rgba(245,238,232,.82); }
 
-    /* ─── SEC 1 — COUNTDOWN ─── */
-    #sec-0 .tagline {
-      font-family:'Lora',serif; font-style:italic;
-      font-size:.8rem; color:var(--muted);
-      letter-spacing:.04em; margin-bottom:2.4rem; margin-top:.3rem;
-    }
-
-    .cd-row {
-      display:flex; align-items:center; gap:.75rem;
-      margin-bottom:1.6rem;
-    }
+    /* SECTION 1 — COUNTDOWN */
+    #sec-0 .tagline { font-family:'Lora',serif; font-style:italic; font-size:.8rem; color:var(--muted); letter-spacing:.04em; margin-bottom:2.4rem; margin-top:.3rem; }
+    .cd-row { display:flex; align-items:center; gap:.75rem; margin-bottom:1.4rem; }
     .cd-unit { display:flex; flex-direction:column; align-items:center; gap:.4rem; }
-    .cd-box {
-      font-family:'Playfair Display',serif; font-size:clamp(1.8rem,5.5vw,2.8rem);
-      font-weight:500; color:var(--ivory);
-      width:clamp(64px,14vw,80px); height:clamp(64px,14vw,80px);
-      background:rgba(196,144,154,.07);
-      border:1px solid var(--border); border-radius:10px;
-      display:flex; align-items:center; justify-content:center;
-      backdrop-filter:blur(12px);
-    }
-    .cd-box.tick { animation: tickFlip .28s ease; }
-    @keyframes tickFlip {
-      0%   { transform:scaleY(1); }
-      45%  { transform:scaleY(0); }
-      100% { transform:scaleY(1); }
-    }
-    .cd-label {
-      font-family:'Jost',sans-serif; font-weight:200;
-      font-size:.58rem; letter-spacing:.2em;
-      text-transform:uppercase; color:var(--muted);
-    }
-    .cd-colon {
-      font-family:'Playfair Display',serif;
-      font-size:1.8rem; color:var(--rose);
-      opacity:.45; padding-bottom:1.1rem;
-    }
+    .cd-box { font-family:'Playfair Display',serif; font-size:clamp(1.8rem,5.5vw,2.8rem); font-weight:500; color:var(--ivory); width:clamp(64px,14vw,80px); height:clamp(64px,14vw,80px); background:rgba(196,144,154,.07); border:1px solid var(--border); border-radius:10px; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(12px); }
+    .cd-box.tick { animation:tickFlip .28s ease; }
+    @keyframes tickFlip { 0%{transform:scaleY(1);} 45%{transform:scaleY(0);} 100%{transform:scaleY(1);} }
+    .cd-label { font-family:'Jost',sans-serif; font-weight:200; font-size:.58rem; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); }
+    .cd-colon { font-family:'Playfair Display',serif; font-size:1.8rem; color:var(--rose); opacity:.45; padding-bottom:1.1rem; }
+    #cd-msg { font-family:'Lora',serif; font-style:italic; font-size:.78rem; color:var(--muted); letter-spacing:.04em; margin-bottom:.6rem; }
+    .lock-hint { font-family:'Jost',sans-serif; font-weight:200; font-size:.62rem; letter-spacing:.15em; color:rgba(196,144,154,.45); margin-bottom:1.4rem; }
+    .pill-btn { font-family:'Jost',sans-serif; font-weight:300; font-size:.67rem; letter-spacing:.28em; text-transform:uppercase; color:var(--rose); border:1px solid rgba(196,144,154,.38); padding:.72rem 2rem; border-radius:100px; cursor:pointer; background:transparent; transition:all .3s ease; }
+    .pill-btn:hover { background:rgba(196,144,154,.1); border-color:var(--rose); }
+    .pill-btn:disabled { opacity:.35; cursor:not-allowed; }
 
-    #cd-msg {
-      font-family:'Lora',serif; font-style:italic;
-      font-size:.78rem; color:var(--muted);
-      letter-spacing:.04em; margin-bottom:1.6rem;
-    }
-
-    .pill-btn {
-      font-family:'Jost',sans-serif; font-weight:300;
-      font-size:.67rem; letter-spacing:.28em;
-      text-transform:uppercase; color:var(--rose);
-      border:1px solid rgba(196,144,154,.38);
-      padding:.72rem 2rem; border-radius:100px;
-      cursor:pointer; background:transparent;
-      transition: all .3s ease;
-    }
-    .pill-btn:hover {
-      background:rgba(196,144,154,.1);
-      border-color:var(--rose);
-    }
-
-    /* ─── SEC 2 — MESSAGE ─── */
-    .card {
-      background:rgba(19,11,28,.65);
-      border:1px solid var(--border);
-      border-radius:18px;
-      padding:clamp(1.6rem,4vw,2.6rem) clamp(1.4rem,4vw,2.6rem);
-      max-width:540px; width:100%;
-      backdrop-filter:blur(24px);
-      box-shadow:0 24px 64px rgba(0,0,0,.55);
-    }
+    /* SECTION 2 — MESSAGE */
+    .card { background:rgba(19,11,28,.65); border:1px solid var(--border); border-radius:18px; padding:clamp(1.6rem,4vw,2.6rem) clamp(1.4rem,4vw,2.6rem); max-width:540px; width:100%; backdrop-filter:blur(24px); box-shadow:0 24px 64px rgba(0,0,0,.55); }
     .card .eyebrow { text-align:center; }
     .card .display { font-size:clamp(1.8rem,5.5vw,3rem); margin-bottom:1.8rem; }
-
     #tw-body { min-height:130px; }
-    .cursor {
-      display:inline-block; width:2px; height:1em;
-      background:var(--rose); margin-left:2px;
-      vertical-align:text-bottom;
-      animation: blink 1s step-end infinite;
-    }
+    .cursor { display:inline-block; width:2px; height:1em; background:var(--rose); margin-left:2px; vertical-align:text-bottom; animation:blink 1s step-end infinite; }
     @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+    .sig { font-family:'Great Vibes',cursive; font-size:1.7rem; color:var(--rose); text-align:right; margin-top:1.4rem; min-height:2rem; }
 
-    .sig {
-      font-family:'Great Vibes',cursive;
-      font-size:1.7rem; color:var(--rose);
-      text-align:right; margin-top:1.4rem;
-      min-height:2rem;
-    }
-
-    /* ─── SEC 3 — PHOTOS ─── */
+    /* SECTION 3 — PHOTOS */
     #sec-2 .display { font-size:clamp(1.6rem,4.5vw,2.6rem); margin-bottom:1.8rem; }
-
-    .polaroid-grid {
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:.85rem;
-      max-width:440px; width:100%;
-    }
-
-    .polaroid {
-      background:#F8F4EE;
-      padding:.45rem .45rem 1.4rem;
-      box-shadow: 0 8px 28px rgba(0,0,0,.55);
-      transition: transform .3s ease, box-shadow .3s ease, z-index 0s;
-      position:relative;
-      cursor:pointer;
-    }
+    .polaroid-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.85rem; max-width:440px; width:100%; }
+    .polaroid { background:#F8F4EE; padding:.45rem .45rem 1.4rem; box-shadow:0 8px 28px rgba(0,0,0,.55); transition:transform .3s ease, box-shadow .3s ease; position:relative; cursor:pointer; }
     .polaroid:nth-child(1){ transform:rotate(-3.2deg); }
     .polaroid:nth-child(2){ transform:rotate(1.8deg) translateY(-6px); }
     .polaroid:nth-child(3){ transform:rotate(-2.1deg); }
     .polaroid:nth-child(4){ transform:rotate(2.4deg) translateY(5px); }
     .polaroid:nth-child(5){ transform:rotate(-1.6deg) translateY(-4px); }
     .polaroid:nth-child(6){ transform:rotate(3deg); }
-    .polaroid:hover {
-      transform:rotate(0deg) scale(1.08) translateY(-6px) !important;
-      box-shadow:0 22px 48px rgba(0,0,0,.6);
-      z-index:20;
-    }
+    .polaroid:hover { transform:rotate(0deg) scale(1.08) translateY(-6px) !important; box-shadow:0 22px 48px rgba(0,0,0,.6); z-index:20; }
+    .polaroid-slot { width:100%; aspect-ratio:1/1; overflow:hidden; }
+    .polaroid-slot img { width:100%; height:100%; object-fit:cover; display:block; }
 
-    .polaroid-slot {
-      width:100%; aspect-ratio:1/1;
-      background:linear-gradient(135deg,#200D28 0%,#341530 45%,#1C1535 100%);
-      display:flex; align-items:center; justify-content:center;
-      overflow:hidden;
-    }
-    .polaroid-slot img {
-      width:100%; height:100%; object-fit:cover; display:block;
-    }
-    .polaroid-slot .ph-icon {
-      font-size:1.3rem; opacity:.35; color:#E8B4BC;
-    }
+    /* SECTION 4 — VIDEO */
+    #sec-3 .script { text-align:center; }
+    .video-sub { font-family:'Jost',sans-serif; font-weight:200; font-size:.62rem; letter-spacing:.3em; color:var(--rose); margin-bottom:1.8rem; text-align:center; }
+    .video-wrap { width:100%; max-width:500px; border-radius:14px; overflow:hidden; box-shadow:0 24px 60px rgba(0,0,0,.6); border:1px solid var(--border); background:#050205; }
+    .video-wrap video { width:100%; display:block; }
 
-    .photo-hint {
-      font-family:'Lora',serif; font-style:italic;
-      font-size:.74rem; color:var(--muted);
-      margin-top:1.1rem; text-align:center;
-    }
-
-    /* ─── SEC 4 — VIDEO ─── */
-    #sec-3 .script { margin-bottom:.3rem; }
-    .video-sub {
-      font-family:'Jost',sans-serif; font-weight:200;
-      font-size:.62rem; letter-spacing:.3em;
-      color:var(--rose); margin-bottom:1.8rem;
-      text-align:center;
-    }
-
-    .video-wrap {
-      width:100%; max-width:500px;
-      border-radius:14px; overflow:hidden;
-      box-shadow:0 24px 60px rgba(0,0,0,.6);
-      border:1px solid var(--border);
-      background:#050205;
-    }
-    .video-inner {
-      width:100%; aspect-ratio:16/9;
-      background:radial-gradient(ellipse at center,#1A0D1F 0%,#07030D 70%);
-      display:flex; flex-direction:column;
-      align-items:center; justify-content:center; gap:.8rem;
-      position:relative;
-    }
-    /* ← Replace the .video-inner block with <video controls src="..."> when ready */
-    .play-ring {
-      width:54px; height:54px; border-radius:50%;
-      border:2px solid rgba(196,144,154,.5);
-      background:rgba(196,144,154,.12);
-      display:flex; align-items:center; justify-content:center;
-      color:var(--rose); font-size:1.1rem;
-      transition: all .3s ease; cursor:pointer;
-    }
-    .play-ring:hover { background:rgba(196,144,154,.25); transform:scale(1.1); }
-    .video-hint-text {
-      font-family:'Jost',sans-serif; font-size:.68rem;
-      font-weight:300; letter-spacing:.08em;
-      color:var(--muted);
-    }
-
-    /* ─── SEC 5 — CLOSING ─── */
-    .float-emoji {
-      font-size:2.6rem; margin-bottom:1.2rem;
-      animation: floatUp 3.2s ease-in-out infinite;
-    }
-    @keyframes floatUp {
-      0%,100%{ transform:translateY(0); }
-      50%    { transform:translateY(-14px); }
-    }
-
-    .closing-name {
-      font-family:'Playfair Display',serif;
-      font-style:italic; font-weight:400;
-      font-size:clamp(1.5rem,4.5vw,2.4rem);
-      color:var(--ivory); text-align:center; line-height:1.3;
-      margin-bottom:1.2rem;
-    }
-    .closing-body {
-      font-family:'Lora',serif; font-style:italic;
-      font-size:.86rem; line-height:1.85;
-      color:rgba(245,238,232,.6);
-      text-align:center; max-width:360px;
-      margin-bottom:2rem;
-    }
-    .hearts {
-      display:flex; gap:.55rem; align-items:center;
-    }
-    .hearts span {
-      font-size:1.1rem;
-      animation: heartBeat 1.6s ease-in-out infinite;
-    }
+    /* SECTION 5 — CLOSING */
+    .float-emoji { font-size:2.6rem; margin-bottom:1.2rem; animation:floatUp 3.2s ease-in-out infinite; }
+    @keyframes floatUp { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-14px);} }
+    .closing-name { font-family:'Playfair Display',serif; font-style:italic; font-size:clamp(1.5rem,4.5vw,2.4rem); color:var(--ivory); text-align:center; line-height:1.3; margin-bottom:1.2rem; }
+    .closing-body { font-family:'Lora',serif; font-style:italic; font-size:.86rem; line-height:1.85; color:rgba(245,238,232,.6); text-align:center; max-width:360px; margin-bottom:2rem; }
+    .hearts { display:flex; gap:.55rem; align-items:center; }
+    .hearts span { font-size:1.1rem; animation:heartBeat 1.6s ease-in-out infinite; }
     .hearts span:nth-child(2){ animation-delay:.18s; }
     .hearts span:nth-child(3){ animation-delay:.36s; }
-    @keyframes heartBeat {
-      0%,100%{ transform:scale(1); opacity:.55; }
-      50%    { transform:scale(1.35); opacity:1; }
-    }
+    @keyframes heartBeat { 0%,100%{transform:scale(1);opacity:.55;} 50%{transform:scale(1.35);opacity:1;} }
 
-    /* ─── RESPONSIVE ─── */
+    /* UNLOCK OVERLAY */
+    #unlock-overlay {
+      position:fixed; inset:0; z-index:999;
+      background:rgba(7,3,13,0);
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      pointer-events:none; opacity:0;
+      transition:opacity .5s ease;
+    }
+    #unlock-overlay.show { opacity:1; pointer-events:all; background:rgba(7,3,13,.92); }
+    .unlock-title { font-family:'Great Vibes',cursive; font-size:clamp(3rem,10vw,6rem); color:var(--rose); text-align:center; animation:unlockPulse 1.5s ease-in-out infinite; }
+    .unlock-sub { font-family:'Playfair Display',serif; font-style:italic; font-size:clamp(1rem,3vw,1.6rem); color:var(--ivory); text-align:center; margin-top:.5rem; opacity:.85; }
+    @keyframes unlockPulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.04);} }
+
     @media (max-width:420px) {
       .cd-box { width:56px; height:56px; font-size:1.5rem; }
-      .cd-row  { gap:.5rem; }
+      .cd-row { gap:.5rem; }
       .polaroid-grid { gap:.55rem; max-width:320px; }
     }
   </style>
 </head>
 <body>
 
-<!-- Background particles -->
 <canvas id="canvas"></canvas>
 
-<!-- Navigation dots -->
+<!-- Nav dots -->
 <nav class="dots">
   <div class="dot active" onclick="goTo(0)"></div>
-  <div class="dot" onclick="goTo(1)"></div>
-  <div class="dot" onclick="goTo(2)"></div>
-  <div class="dot" onclick="goTo(3)"></div>
-  <div class="dot" onclick="goTo(4)"></div>
+  <div class="dot locked" onclick="goTo(1)"></div>
+  <div class="dot locked" onclick="goTo(2)"></div>
+  <div class="dot locked" onclick="goTo(3)"></div>
+  <div class="dot locked" onclick="goTo(4)"></div>
 </nav>
 
-<!-- ══════════════════════════════════════
-     SECTION 1 — COUNTDOWN
-═══════════════════════════════════════════ -->
+<!-- Unlock overlay -->
+<div id="unlock-overlay">
+  <div class="unlock-title">Happy Birthday!</div>
+  <div class="unlock-sub">Nandhita Syakina Azalea 🌸</div>
+</div>
+
+<!-- ══ SECTION 1 — COUNTDOWN ══ -->
 <section class="section active" id="sec-0">
   <div class="eyebrow">✦ Menghitung Hari ✦</div>
   <h1 class="display">Her Special Day</h1>
   <p class="script" style="margin-bottom:.3rem;">is Coming</p>
   <p class="tagline">Sesuatu yang indah sedang menunggumu 🩷</p>
-
   <div class="cd-row">
-    <div class="cd-unit">
-      <div class="cd-box" id="cd-d">00</div>
-      <div class="cd-label">Hari</div>
-    </div>
+    <div class="cd-unit"><div class="cd-box" id="cd-d">00</div><div class="cd-label">Hari</div></div>
     <div class="cd-colon">:</div>
-    <div class="cd-unit">
-      <div class="cd-box" id="cd-h">00</div>
-      <div class="cd-label">Jam</div>
-    </div>
+    <div class="cd-unit"><div class="cd-box" id="cd-h">00</div><div class="cd-label">Jam</div></div>
     <div class="cd-colon">:</div>
-    <div class="cd-unit">
-      <div class="cd-box" id="cd-m">00</div>
-      <div class="cd-label">Menit</div>
-    </div>
+    <div class="cd-unit"><div class="cd-box" id="cd-m">00</div><div class="cd-label">Menit</div></div>
     <div class="cd-colon">:</div>
-    <div class="cd-unit">
-      <div class="cd-box" id="cd-s">00</div>
-      <div class="cd-label">Detik</div>
-    </div>
+    <div class="cd-unit"><div class="cd-box" id="cd-s">00</div><div class="cd-label">Detik</div></div>
   </div>
-
   <p id="cd-msg">✦ Beberapa detik lagi... ✦</p>
-  <button class="pill-btn" onclick="goTo(1)">✦ Tunggu Sampai Waktunya ✦</button>
+  <p class="lock-hint" id="lock-hint">🔒 semua akan terbuka di hari spesialnya</p>
+  <button class="pill-btn" id="main-btn" onclick="goTo(1)" disabled>✦ Tunggu Sampai 17 Juni ✦</button>
 </section>
 
-<!-- ══════════════════════════════════════
-     SECTION 2 — BIRTHDAY MESSAGE
-═══════════════════════════════════════════ -->
+<!-- ══ SECTION 2 — MESSAGE ══ -->
 <section class="section" id="sec-1">
   <div class="card">
     <div class="eyebrow">✦ Happy Birthday ✦</div>
@@ -376,139 +164,141 @@
   </div>
 </section>
 
-<!-- ══════════════════════════════════════
-     SECTION 3 — PHOTO GALLERY
-═══════════════════════════════════════════ -->
+<!-- ══ SECTION 3 — PHOTOS ══ -->
 <section class="section" id="sec-2">
   <div class="eyebrow">✦ Kenangan Kita ✦</div>
   <h2 class="display" style="margin-bottom:1.8rem;">Our Memories</h2>
-
   <div class="polaroid-grid">
-    <!--
-      CARA GANTI FOTO:
-      Hapus <div class="ph-icon">📷</div>
-      Ganti dengan <img src="foto-kamu.jpg" alt="">
-    -->
-    <div class="polaroid"><div class="polaroid-slot"><div class="ph-icon">📷</div></div></div>
-    <div class="polaroid"><div class="polaroid-slot"><div class="ph-icon">📷</div></div></div>
-    <div class="polaroid"><div class="polaroid-slot"><div class="ph-icon">📷</div></div></div>
-    <div class="polaroid"><div class="polaroid-slot"><div class="ph-icon">📷</div></div></div>
-    <div class="polaroid"><div class="polaroid-slot"><div class="ph-icon">📷</div></div></div>
-    <div class="polaroid"><div class="polaroid-slot"><div class="ph-icon">📷</div></div></div>
+    <div class="polaroid"><div class="polaroid-slot"><img src="assets/photo1.jpg" alt="memory"></div></div>
+    <div class="polaroid"><div class="polaroid-slot"><img src="assets/photo3.png" alt="memory"></div></div>
+    <div class="polaroid"><div class="polaroid-slot"><img src="assets/photo5.png" alt="memory"></div></div>
+    <div class="polaroid"><div class="polaroid-slot"><img src="assets/photo2.png" alt="memory"></div></div>
+    <div class="polaroid"><div class="polaroid-slot"><img src="assets/photo4.png" alt="memory"></div></div>
+    <div class="polaroid"><div class="polaroid-slot"><img src="assets/photo6.png" alt="memory"></div></div>
   </div>
-
-  <p class="photo-hint">Ganti placeholder 📷 dengan foto kenangan kalian 🩷</p>
 </section>
 
-<!-- ══════════════════════════════════════
-     SECTION 4 — VIDEO
-═══════════════════════════════════════════ -->
+<!-- ══ SECTION 4 — VIDEO ══ -->
 <section class="section" id="sec-3">
-  <p class="script" style="text-align:center;">A Moment For You</p>
+  <p class="script">A Moment For You</p>
   <p class="video-sub">✦ a special video message ✦</p>
-
   <div class="video-wrap">
-    <!-- 
-      CARA GANTI VIDEO:
-      Hapus <div class="video-inner">...</div>
-      Ganti dengan: <video controls style="width:100%;display:block;" src="video-kamu.mp4"></video>
-    -->
-    <div class="video-inner">
-      <div class="play-ring">▶</div>
-      <span class="video-hint-text">Ganti dengan video spesialmu</span>
-    </div>
+    <video controls preload="metadata" poster="">
+      <source src="assets/video.mp4" type="video/mp4">
+    </video>
   </div>
-
   <button class="pill-btn" onclick="goTo(4)" style="margin-top:1.5rem;">✦ Birthday Wishes ✦</button>
 </section>
 
-<!-- ══════════════════════════════════════
-     SECTION 5 — CLOSING
-═══════════════════════════════════════════ -->
+<!-- ══ SECTION 5 — CLOSING ══ -->
 <section class="section" id="sec-4">
   <div class="float-emoji">🌸</div>
-  <h2 class="closing-name">
-    Selamat Ulang Tahun,<br>
-    Nandhita Syakina Azalea
-  </h2>
-  <p class="closing-body">
-    Semoga hari ini dan setiap hari setelahnya selalu penuh kebahagiaan,
-    kebaikan, dan hal-hal indah yang kamu layak dapatkan. 🩷
-  </p>
-  <div class="hearts">
-    <span>🩷</span>
-    <span>🩷</span>
-    <span>🩷</span>
-  </div>
+  <h2 class="closing-name">Selamat Ulang Tahun,<br>Nandhita Syakina Azalea</h2>
+  <p class="closing-body">Semoga hari ini dan setiap hari setelahnya selalu penuh kebahagiaan, kebaikan, dan hal-hal indah yang kamu layak dapatkan. 🩷</p>
+  <div class="hearts"><span>🩷</span><span>🩷</span><span>🩷</span></div>
 </section>
 
 <script>
-/* ════════════════════════════════════════
-   PARTICLE SYSTEM
-════════════════════════════════════════ */
+/* ── PARTICLES ── */
 const canvas = document.getElementById('canvas');
-const ctx    = canvas.getContext('2d');
+const ctx = canvas.getContext('2d');
 let W, H, particles = [];
-
-function resize() {
-  W = canvas.width  = window.innerWidth;
-  H = canvas.height = window.innerHeight;
-}
-resize();
-window.addEventListener('resize', resize);
-
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize(); window.addEventListener('resize', resize);
 class Particle {
   constructor() { this.init(true); }
-  init(random) {
-    this.x  = Math.random() * W;
-    this.y  = random ? Math.random() * H : H + 10;
-    this.r  = Math.random() * 1.8 + .4;
-    this.op = Math.random() * .45 + .08;
-    this.vy = -(Math.random() * .35 + .08);
-    this.vx = (Math.random() - .5) * .15;
-    this.ph = Math.random() * Math.PI * 2;
-    this.ps = Math.random() * .018 + .005;
-    const t = Math.random();
-    this.col = t > .72 ? '196,144,154'
-             : t > .92 ? '196,149,106'
-             : '245,238,232';
+  init(rand) {
+    this.x=Math.random()*W; this.y=rand?Math.random()*H:H+10;
+    this.r=Math.random()*1.8+.4; this.op=Math.random()*.45+.08;
+    this.vy=-(Math.random()*.35+.08); this.vx=(Math.random()-.5)*.15;
+    this.ph=Math.random()*Math.PI*2; this.ps=Math.random()*.018+.005;
+    const t=Math.random();
+    this.col=t>.72?'196,144,154':t>.92?'196,149,106':'245,238,232';
   }
-  update() {
-    this.x  += this.vx;
-    this.y  += this.vy;
-    this.ph += this.ps;
-    if (this.y < -8) this.init(false);
-  }
+  update() { this.x+=this.vx; this.y+=this.vy; this.ph+=this.ps; if(this.y<-8)this.init(false); }
   draw() {
-    const a = this.op * (.5 + .5 * Math.sin(this.ph));
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
-    ctx.fillStyle = `rgba(${this.col},${a})`;
-    ctx.fill();
-    if (this.r > 1.3) {
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.r * 2.8, 0, Math.PI*2);
-      ctx.fillStyle = `rgba(${this.col},${a * .12})`;
-      ctx.fill();
-    }
+    const a=this.op*(.5+.5*Math.sin(this.ph));
+    ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(${this.col},${a})`; ctx.fill();
+    if(this.r>1.3){ ctx.beginPath(); ctx.arc(this.x,this.y,this.r*2.8,0,Math.PI*2); ctx.fillStyle=`rgba(${this.col},${a*.12})`; ctx.fill(); }
+  }
+}
+for(let i=0;i<90;i++) particles.push(new Particle());
+(function loop(){ ctx.clearRect(0,0,W,H); particles.forEach(p=>{p.update();p.draw();}); requestAnimationFrame(loop); })();
+
+/* ── CONFETTI BURST ── */
+let confetti = [];
+class Conf {
+  constructor() {
+    this.x=Math.random()*W; this.y=H/2;
+    this.vx=(Math.random()-0.5)*12; this.vy=-(Math.random()*18+6);
+    this.gravity=0.5; this.r=Math.random()*5+3;
+    this.color=['#C4909A','#E8B4BC','#C4956A','#F5EEE8','#D4B0BB'][Math.floor(Math.random()*5)];
+    this.alpha=1; this.rot=Math.random()*360; this.rotV=(Math.random()-0.5)*8;
+  }
+  update() { this.vy+=this.gravity; this.x+=this.vx; this.y+=this.vy; this.rot+=this.rotV; this.alpha-=0.012; }
+  draw() {
+    ctx.save(); ctx.globalAlpha=Math.max(0,this.alpha);
+    ctx.translate(this.x,this.y); ctx.rotate(this.rot*Math.PI/180);
+    ctx.fillStyle=this.color; ctx.fillRect(-this.r/2,-this.r/2,this.r,this.r);
+    ctx.restore();
+  }
+}
+function burstConfetti() {
+  for(let i=0;i<120;i++) confetti.push(new Conf());
+  function animConf() {
+    confetti=confetti.filter(c=>c.alpha>0);
+    confetti.forEach(c=>{c.update();c.draw();});
+    if(confetti.length>0) requestAnimationFrame(animConf);
+  }
+  animConf();
+}
+
+/* ── LOCK SYSTEM ── */
+const TARGET = new Date('2026-06-17T00:00:00');
+let isUnlocked = new Date() >= TARGET;
+
+function checkUnlock() {
+  if (!isUnlocked && new Date() >= TARGET) {
+    isUnlocked = true;
+    triggerUnlock();
   }
 }
 
-for (let i = 0; i < 90; i++) particles.push(new Particle());
+function triggerUnlock() {
+  // Show overlay
+  const overlay = document.getElementById('unlock-overlay');
+  overlay.classList.add('show');
+  burstConfetti();
+  // Unlock dots
+  document.querySelectorAll('.dot').forEach(d => d.classList.remove('locked'));
+  // Unlock button
+  const btn = document.getElementById('main-btn');
+  btn.disabled = false;
+  btn.textContent = '✦ Buka Pesannya ✦';
+  document.getElementById('lock-hint').style.display = 'none';
+  // Hide overlay after 2.5s, go to message
+  setTimeout(() => {
+    overlay.classList.remove('show');
+    setTimeout(() => goTo(1), 600);
+  }, 2500);
+}
 
-(function loop() {
-  ctx.clearRect(0, 0, W, H);
-  particles.forEach(p => { p.update(); p.draw(); });
-  requestAnimationFrame(loop);
-})();
+function applyLockState() {
+  if (isUnlocked) {
+    document.querySelectorAll('.dot').forEach(d => d.classList.remove('locked'));
+    document.getElementById('main-btn').disabled = false;
+    document.getElementById('main-btn').textContent = '✦ Buka Pesannya ✦';
+    document.getElementById('lock-hint').style.display = 'none';
+  }
+}
+applyLockState();
 
-/* ════════════════════════════════════════
-   SECTION NAVIGATION
-════════════════════════════════════════ */
+/* ── NAVIGATION ── */
 let cur = 0;
 const TOTAL = 5;
-
 function goTo(idx) {
+  if (idx !== 0 && !isUnlocked) return; // locked
   document.getElementById(`sec-${cur}`).classList.remove('active');
   document.querySelectorAll('.dot')[cur].classList.remove('active');
   cur = idx;
@@ -517,109 +307,63 @@ function goTo(idx) {
   if (cur === 1) initTypewriter();
 }
 
-// Mouse wheel
 let wheelCool = false;
 window.addEventListener('wheel', e => {
-  if (wheelCool) return;
-  wheelCool = true;
-  setTimeout(() => wheelCool = false, 900);
+  if (wheelCool) return; wheelCool = true; setTimeout(()=>wheelCool=false, 900);
   if (e.deltaY > 0 && cur < TOTAL-1) goTo(cur+1);
-  if (e.deltaY < 0 && cur > 0)       goTo(cur-1);
+  if (e.deltaY < 0 && cur > 0) goTo(cur-1);
 }, {passive:true});
 
-// Touch swipe
 let ty0 = 0;
-window.addEventListener('touchstart', e => { ty0 = e.touches[0].clientY; }, {passive:true});
-window.addEventListener('touchend', e => {
+window.addEventListener('touchstart', e=>{ ty0=e.touches[0].clientY; }, {passive:true});
+window.addEventListener('touchend', e=>{
   const dy = ty0 - e.changedTouches[0].clientY;
   if (Math.abs(dy) < 40) return;
   if (dy > 0 && cur < TOTAL-1) goTo(cur+1);
-  if (dy < 0 && cur > 0)       goTo(cur-1);
+  if (dy < 0 && cur > 0) goTo(cur-1);
 }, {passive:true});
 
-/* ════════════════════════════════════════
-   COUNTDOWN — Target: 17 Juni 2026
-════════════════════════════════════════ */
-const TARGET = new Date('2026-06-17T00:00:00');
-const $d = document.getElementById('cd-d');
-const $h = document.getElementById('cd-h');
-const $m = document.getElementById('cd-m');
-const $s = document.getElementById('cd-s');
-const $msg = document.getElementById('cd-msg');
-
-function pad(n) { return String(n).padStart(2,'0'); }
-function tick(el, val) {
-  if (el.textContent !== val) {
-    el.textContent = val;
-    el.classList.remove('tick');
-    void el.offsetWidth;
-    el.classList.add('tick');
-  }
-}
-
+/* ── COUNTDOWN ── */
+const $d=document.getElementById('cd-d'), $h=document.getElementById('cd-h');
+const $m=document.getElementById('cd-m'), $s=document.getElementById('cd-s');
+const $msg=document.getElementById('cd-msg');
+function pad(n){ return String(n).padStart(2,'0'); }
+function tick(el,val){ if(el.textContent!==val){ el.textContent=val; el.classList.remove('tick'); void el.offsetWidth; el.classList.add('tick'); } }
 function updateCD() {
+  checkUnlock();
   const diff = TARGET - new Date();
   if (diff <= 0) {
-    [$d,$h,$m,$s].forEach(el => tick(el,'00'));
+    [$d,$h,$m,$s].forEach(el=>tick(el,'00'));
     $msg.textContent = '🎉 Hari Spesialnya Telah Tiba! 🎉';
     return;
   }
-  const dd = Math.floor(diff/864e5);
-  const hh = Math.floor(diff%864e5/36e5);
-  const mm = Math.floor(diff%36e5/6e4);
-  const ss = Math.floor(diff%6e4/1e3);
-  tick($d, pad(dd));
-  tick($h, pad(hh));
-  tick($m, pad(mm));
-  tick($s, pad(ss));
-
-  if      (dd > 1)  $msg.textContent = `✦ ${dd} hari lagi menuju harinya ✦`;
-  else if (dd === 1) $msg.textContent = '✦ Besok adalah harinya! ✦';
-  else if (hh > 0)  $msg.textContent = `✦ Tinggal ${hh} jam lagi! ✦`;
-  else              $msg.textContent  = '✦ Sebentar lagi... ✦';
+  const dd=Math.floor(diff/864e5), hh=Math.floor(diff%864e5/36e5);
+  const mm=Math.floor(diff%36e5/6e4), ss=Math.floor(diff%6e4/1e3);
+  tick($d,pad(dd)); tick($h,pad(hh)); tick($m,pad(mm)); tick($s,pad(ss));
+  if(dd>1) $msg.textContent=`✦ ${dd} hari lagi menuju harinya ✦`;
+  else if(dd===1) $msg.textContent='✦ Besok adalah harinya! ✦';
+  else if(hh>0) $msg.textContent=`✦ Tinggal ${hh} jam lagi! ✦`;
+  else $msg.textContent='✦ Sebentar lagi... ✦';
 }
-updateCD();
-setInterval(updateCD, 1000);
+updateCD(); setInterval(updateCD, 1000);
 
-/* ════════════════════════════════════════
-   TYPEWRITER
-   Ganti teks di bawah sesuai pesanmu!
-════════════════════════════════════════ */
-const MSG = `HAPPY BIRTHDAY SAYANGKUU 🩷\n\nSelamat ulang tahun ya, My Beloved Girlfriend\nHari ini hari yang sangat spesial banget.\n\nI'm so glad that i met you, sorry i can't give you something special
-\n\nKamu adalah seseorang yang sangat berarti dan istimewa. Semoga hari ini dan setiap hari ke depannya selalu penuh kebahagiaan.`;
-const SIG = `Dibuat Oleh Your BF ♡`;
-
+/* ── TYPEWRITER ── */
+// Ganti teks di bawah sesuai pesanmu!
+const MSG = `HAPPY BIRTHDAY SAYANGKUU 🩷\n\nSelamat ulang tahun ya, Nandhita!\nHari ini hari yang sangat spesial banget.\n\n[Tulis pesanmu di sini — ungkapkan semua yang kamu rasakan untuknya 🌸]\n\nKamu adalah seseorang yang sangat berarti dan istimewa. Semoga hari ini dan setiap hari ke depannya selalu penuh kebahagiaan.`;
+const SIG = `Dengan cinta ♡`;
 let twDone = false;
-
 function initTypewriter() {
-  if (twDone) return;
-  twDone = true;
-  const body = document.getElementById('tw-body');
-  const sig  = document.getElementById('tw-sig');
-  body.innerHTML = '<span class="cursor"></span>';
-  sig.textContent = '';
-
-  let i = 0;
+  if (twDone) return; twDone = true;
+  const body=document.getElementById('tw-body'), sig=document.getElementById('tw-sig');
+  body.innerHTML='<span class="cursor"></span>'; sig.textContent='';
+  let i=0;
   function typeBody() {
-    if (i < MSG.length) {
-      const slice = MSG.slice(0, ++i);
-      body.innerHTML = slice.replace(/\n/g,'<br>') + '<span class="cursor"></span>';
-      setTimeout(typeBody, i < 30 ? 55 : 22);
-    } else {
-      body.innerHTML = MSG.replace(/\n/g,'<br>');
-      setTimeout(typeSig, 600);
-    }
+    if(i<MSG.length){ const s=MSG.slice(0,++i); body.innerHTML=s.replace(/\n/g,'<br>')+'<span class="cursor"></span>'; setTimeout(typeBody,i<30?55:22); }
+    else { body.innerHTML=MSG.replace(/\n/g,'<br>'); setTimeout(typeSig,600); }
   }
-
-  let j = 0;
-  function typeSig() {
-    if (j < SIG.length) {
-      sig.textContent = SIG.slice(0, ++j);
-      setTimeout(typeSig, 55);
-    }
-  }
-
-  setTimeout(typeBody, 200);
+  let j=0;
+  function typeSig() { if(j<SIG.length){ sig.textContent=SIG.slice(0,++j); setTimeout(typeSig,55); } }
+  setTimeout(typeBody,200);
 }
 </script>
 </body>
